@@ -2,18 +2,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-
+const bodyParser = require('body-parser');
 
 // bring in routes to pages
 const users = require('./routes/api/users');
 const profile = require('./routes/api/profile');
 const posts = require('./routes/api/posts');
 
-
-
-
-
+// attach app to express
 const app = express();
+
+
+// bodyparse middleware
+app.use(bodyParser.urlencoded({extended: false }))
+app.use(bodyParser.json());
+
 
 // db config to mlab
 const db = require('./config/keys').mongoURI;
