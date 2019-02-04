@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const bodyParser = require('body-parser');
+const passport = require('passport');
+
 
 // bring in routes to pages
 const users = require('./routes/api/users');
@@ -27,7 +29,12 @@ mongoose.connect(db)
 .catch(err => console.log(err));
  
 
-app.get('/', (req, res) => res.send("Hello"));
+// passport middleware
+app.use(passport.initialize());
+
+// passport config jwt strategy
+require('./config/passport')(passport);
+
 
 
 app.use('/api/users', users);

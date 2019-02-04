@@ -2,6 +2,9 @@ const express = require('express');
 const gravatar = require('gravatar');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const keys = require('../../config/keys');
+const passport = require('passport');
 
 
 // load in the usermoder
@@ -52,7 +55,7 @@ router.post('/register', (req, res) => {
                     newUser.password = hash; 
                     newUser
                         .save()
-                        .then(user => res.json(user)) //user that is created send back the user
+                        .then(user => res.json(user)) //user that is created send back the user data
                         .catch(user => console.log(err)) // in case something is wrong, show error
         });
     });
@@ -61,6 +64,59 @@ router.post('/register', (req, res) => {
 })
 })
 
+
+// @route post api/users/login
+// login user / returning the JSONwebtoken
+// this is a public route
+router.post('/login', (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    User.findOne({email})
+    .then(user => {
+
+        // check if the user exists in the database 
+                if(!user){
+                return res.status(404).json({ email: 'email not found'});
+
+        } 
+        bcrypt.compare(password, user.password) //compare form password with hashpassword
+        .then(isMatch => {
+            if(isMatch) {
+                // user matches
+                const payload = {id: user.id, name: user.name, avatar: user.avatar} // you pick options to pass as payload. the more options can slow down the app. jwtpayload
+
+
+                jwt.sign(payload, keys.secretOrKey, {expiresIn: '1d'}, (err, token) => {
+                    res.json({
+                     success: true,
+                     token: 'Bearer ' + token
+                    });
+                });
+                
+            }else {
+                return res.status(400).json({ password: "incorrect password"});
+            }
+        });
+
+        // check password 
+
+    });
+    // find user by email 
+});
+
+
+// @route GET api/users/currentuser
+// returns the current user (whos signed in )
+// this is a private route{
+router.get('/current', passport.authenticate('jwt', {session:false}), (req, res) => {
+res.json ({
+    id: req.user.id,
+    name: req.user.name,
+    email: req.user.email
+
+})
+});
 
 
 module.exports = router;
