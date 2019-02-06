@@ -16,7 +16,7 @@ const app = express();
 
 
 // bodyparse middleware
-app.use(bodyParser.urlencoded({extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 
 
@@ -25,9 +25,9 @@ const db = require('./config/keys').mongoURI;
 
 // connection to mlab using a promise. 
 mongoose.connect(db)
-.then( () => console.log("mongoDB connected"))
-.catch(err => console.log(err));
- 
+    .then(() => console.log("mongoDB connected"))
+    .catch(err => console.log(err));
+
 
 // passport middleware
 app.use(passport.initialize());
