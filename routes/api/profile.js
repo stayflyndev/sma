@@ -10,6 +10,8 @@ const passport = require('passport');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 const validateProfileInput = require('../../validation/profile');
+const validateExperienceInput = require('../../validation/experience');
+
 
 
 
@@ -46,17 +48,18 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 // this is a public route
 router.get('/all', (req, res) => {
     const errors = {};
+
     Profile.find()
     .populate('user', ['name', 'avatar'])
     .then(profiles => {
-        if(!profile) {
-            errors.noprofiles = "there are no profiles";
+        if(!profiles) {
+            errors.noprofile = "there are no profiles";
             return res.status(404).json(errors);
         }
-        res.json(profile);
+        res.json(profiles);
         
     })
-        .catch(err => res.status(404).json({profiles: "there is nor profile here"}));
+        .catch(err => res.status(404).json({profiles: "there are no profiles here"}));
     });
 
 
@@ -69,7 +72,7 @@ router.get('/handle/:handle', (req, res) => {
     .populate('user', ['name', 'avatar'])
     .then(profile => {
         if(!profile) {
-            errors.noprofile = "there is no profile";
+            errors.noprofile = "there is no profile for the user";
             res.status(404).json(errors);
         }
         res.json(profile);
@@ -92,7 +95,7 @@ router.get('/user/:user_id', (req, res) => {
         }
         res.json(profile);
     })
-        .catch(err => res.status(404).json({profile: "there is nor profile here"}));
+        .catch(err => res.status(404).json({profile: "there is nor profile found"}));
     });
 
     
@@ -154,7 +157,30 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
 });
 
 
+// @route Post profile experience
+// add experience to the profile
+// this is a private route
+router.post('/experience', passport.authenticate('jwt', { session: false }), (req, res) => {
 
+    const { errors, isValid } = validateExperienceInput(req.body);
+
+    if(!isValid){
+        // return errors 404 
+        return res.status(400).json(errors);
+    }
+
+    Profile.findOne({ user: req.user.id }) // find the profile using the id from the token
+         .then(profile => {
+         const newExp = {
+             tite: req.body.title,
+             company: req.body.company
+         }
+        //  add experience array
+        profile.experience.unshift();
+        profile.save().then(profile => res.json(profile));
+
+        })
+    });
 
 
 module.exports = router;
