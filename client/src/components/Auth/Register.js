@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
+import { withRouter }from 'react-router-dom'; // to route from within the redux action
 
-import axios from 'axios';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 import { registerUser } from '../../actions/authActions'
@@ -22,6 +22,14 @@ constructor(){
 
 }
 
+// runs when the component recieves new properties
+
+componentWillReceiveProps(nextProps){
+  if(nextProps.errors){
+    this.setState({errors: nextProps.errors})
+  }
+}
+
 onChange = (event) =>
 {
     this.setState({[event.target.name]: event.target.value}) //name is the attribute of the input form
@@ -36,7 +44,7 @@ const newUser = {
     passwordtwo: this.state.passwordtwo
 };
 
-this.props.registerUser(newUser)
+this.props.registerUser(newUser, this.props.history) //redirect within the action
 
 // send user created to the db
 
@@ -50,13 +58,12 @@ this.props.registerUser(newUser)
     // destructuring 
     const {errors } = this.state;
 
-    const { user } = this.props.auth;
+ 
 
     return (
   
         <div className="register">
-        {user ? user.name : null}
-        <div className="container">
+         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
               <h1 className="display-4 text-center">Sign Up</h1>
@@ -97,13 +104,15 @@ this.props.registerUser(newUser)
 
 Register.propTypes ={
   registerUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
 }
 
 
 // get the auth state into the component 
 const mapStateToProps = (state) => ({
-  auth: state.auth
+  auth: state.auth,
+  errors: state.errors
 })
 
-export default connect(mapStateToProps, {registerUser})(Register);
+export default connect(mapStateToProps, {registerUser})(withRouter(Register));
