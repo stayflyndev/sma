@@ -1,9 +1,47 @@
 import React, { Component } from 'react'
 import {Link} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import { logoutUser } from '../../actions/authActions';
 
 
  class Navbar extends Component {
+   onLogoutClick(event){
+    event.preventDefault();
+    this.props.logoutUser();
+    
+   }
+
   render() {
+
+    const { isAuthenticated, user } = this.props.auth;
+    const authLinks =(
+      <ul className="navbar-nav ml-auto">
+      <li className="nav-item">
+    
+      <a href=''onClick={this.onLogoutClick.bind(this)} className='nav-link' >
+      <img src={user.avatar} alt={user.name} style={{ width:'25px', height:'25px' }} title="you must have gravatar account to display img" />{''}
+      Logout
+      </a>
+      </li>
+    </ul>
+    );
+
+    const guestLinks =(
+      <ul className="navbar-nav ml-auto">
+      <li className="nav-item">
+        <Link className='nav-link' to="/register">Sign Up</Link>
+      </li>
+      <li className="nav-item">
+      
+        <Link className='nav-link' to="/login">Sign In</Link>
+
+      </li>
+    </ul>
+    );
+
+    
+
     return (
       <div>
         
@@ -24,17 +62,8 @@ import {Link} from 'react-router-dom';
           
           </li>
         </ul>
-
-        <ul className="navbar-nav ml-auto">
-          <li className="nav-item">
-            <Link className='nav-link' to="/register">Sign Up</Link>
-          </li>
-          <li className="nav-item">
-          
-            <Link className='nav-link' to="/login">Siggn In</Link>
-
-          </li>
-        </ul>
+      {isAuthenticated ? authLinks : guestLinks}
+       
       </div>
     </div>
   </nav>
@@ -48,4 +77,19 @@ import {Link} from 'react-router-dom';
   }
 }
 
-export default Navbar;
+Navbar.propTypes = {
+  // actions are bje properties 
+  logoutUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+ 
+}
+
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  errors: state.errors
+});
+
+
+
+export default connect(mapStateToProps, {logoutUser})(Navbar);

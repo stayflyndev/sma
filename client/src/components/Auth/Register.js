@@ -21,6 +21,11 @@ constructor(){
     // this.onSubmit = this.onSubmit.bind(this)
 
 }
+componentDidMount( ) {
+  if(this.props.auth.isAuthenticated){
+    this.props.history.push('/dashboard')
+  }
+}
 
 // runs when the component recieves new properties
 
