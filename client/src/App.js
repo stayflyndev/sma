@@ -5,7 +5,7 @@ import store from './store';
 
 import jwt_decode from 'jwt-decode';
 import setAuthToken from './utils/setAuthToken';
-import { setCurrentUser, logoutUser } from './actions/authActions'
+import { setCurrentUser, logoutUser } from './actions/authActions';
 
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -13,6 +13,7 @@ import Landing from './components/layout/Landing';
 import Dashboard from './components/dashboard/Dashboard';
 
 import PrivateRoute from './components/common/PrivateRoute';
+import CreateProfile from './components/create-profile/CreateProfile';
 
 import Register from './components/Auth/Register';
 import Login from './components/Auth/Login';
@@ -60,6 +61,8 @@ class App extends Component {
       <Route exact path= "/login" component={Login} />
       <Switch>
       <PrivateRoute exact path= "/dashboard" component={Dashboard} />
+      <PrivateRoute exact path= "/create-profile" component={CreateProfile} />
+
       </Switch>
 
       </div>
