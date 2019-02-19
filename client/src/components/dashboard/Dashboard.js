@@ -5,6 +5,7 @@ import { loginUser } from '../../actions/authActions'
 import { getCurrentProfile } from '../../actions/profileActions'
 import Spinner from '../common/Spinner'
 import {Link} from 'react-router-dom';
+import ProfileActions from './ProfileActions';
 
 
 
@@ -27,7 +28,13 @@ class Dashboard extends Component {
       // check logged in user has profile data
 
       if(Object.keys(profile).length > 0 ){
-        dashboardContent = <h4>display profile</h4>
+        dashboardContent = (
+          <div> 
+          <p className="lead text-muted"> Welcome <Link to={`/profile/${profile.handle}`}>{user.name}</Link> </p>
+       
+
+          </div>
+        );
       } else {
         // logged in but has no profile
         dashboardContent = (

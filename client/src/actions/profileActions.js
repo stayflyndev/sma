@@ -2,17 +2,15 @@ import axios from 'axios';
 import setAuthToken from '../utils/setAuthToken'
 import jwt_decode from 'jwt-decode'
 
-import { GET_PROFILE, PROFILE_LOADING, CLEAR_CURRENT_PROFILE } from './types'
+import { GET_PROFILE, PROFILE_LOADING, CLEAR_CURRENT_PROFILE, GET_ERRORS } from './types'
 
 // get current profile
 export const getCurrentProfile = () => dispatch => {
 // set loading 
 
 dispatch(setProfileLoading());
-
-
     axios
-    .get('/api/users/profile')
+    .get('/api/profile')
     .then(res => //redirect to a page after siging in successfully 
            dispatch ({
             type: GET_PROFILE, // the type 
@@ -33,6 +31,24 @@ export const setProfileLoading = () => {
         type: PROFILE_LOADING
     }
 }
+
+
+// create profile
+export const createProfile = (profileData, history) => dispatch => {
+   axios
+   .post('api/profile', profileData)
+   .then(res => history.push('/dashboard'))
+   .catch(err =>
+    dispatch({
+        type: GET_ERRORS,
+        payload:err.response.data
+    })
+    
+    
+    );
+};
+
+
 
 
 // clear current profile 
